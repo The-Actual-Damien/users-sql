@@ -1,6 +1,7 @@
 import { Column, Connection, createConnection, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { UserInterface } from "@reactive-underground/users";
 import { SqlUserRepository } from "./SqlUserRepository";
+import { UserNotFoundException } from "../exception/UserNotFoundException";
 
 describe("SqlUserRepository", () => {
     let connection: Connection;
@@ -60,6 +61,23 @@ describe("SqlUserRepository", () => {
             expect(updatedUser.id).toBe(users[0].id);
             expect(updatedUser.login).toBe(users[0].login);
             expect(updatedUser.password).toBe(users[0].password);
+        });
+    });
+    describe("getById", () => {
+        it("should be return exists entity", async () => {
+            const users = await connection.getRepository(User).save([
+                { login: "1234", password: '1234' }
+            ]);
+            const user = await repository.getById(users[0].id);
+            expect(user).toBeDefined();
+            expect(user).toEqual(users[0]);
+        });
+        it("should be throw UserNotFoundException", async () => {
+            try {
+                await repository.getById(1);
+            } catch (e) {
+                expect(e).toBeInstanceOf(UserNotFoundException);
+            }
         });
     });
 
