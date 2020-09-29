@@ -29,7 +29,6 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "prepublish": "build",
     "build": "tsc --project tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
