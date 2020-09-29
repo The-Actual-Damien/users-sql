@@ -8,7 +8,21 @@ export class SqlUserRepository<Entity, ID = number> implements UserRepositoryInt
     ) {}
 
     public async findBy<T>(options: FindUserOptionsInterface): Promise<T[]> {
-        return Promise.resolve([] as T[]) ;
+        const query = await this.repository.createQueryBuilder('u');
+        if(Number.isFinite(options.limit)) {
+            query.take(options.limit);
+        }
+        if(Number.isFinite(options.offset)) {
+            query.skip(options.offset);
+        }
+        if(typeof options.order === 'object') {
+            for(const key in options.order) {
+                if(options.order.hasOwnProperty(key)){
+                    query.addOrderBy(key, options.order[key]);
+                }
+            }
+        }
+        return await query.getMany() as unknown as T[];
     }
 
     public async findByLogin<T>(login: string): Promise<T | undefined> {

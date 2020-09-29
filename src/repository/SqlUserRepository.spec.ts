@@ -97,4 +97,51 @@ describe("SqlUserRepository", () => {
             expect(user).toBeUndefined();
         });
     });
+    describe("findBy", () => {
+        let users: User[];
+        beforeEach(async () => {
+            users = await connection.getRepository(User).save([
+                { login: "ddd", password: '1234' },
+                { login: "ccc", password: '1234' },
+                { login: "bbb", password: '1234' },
+                { login: "aaa", password: '1234' },
+            ]);
+        });
+        it("should return all users", async () => {
+            const result = await repository.findBy({});
+            expect(users).toEqual(result);
+        });
+        it("should be return users with limit", async () => {
+            const result = await repository.findBy({
+                limit: 2
+            });
+            expect(result).toHaveLength(2);
+            expect(result).toEqual([
+                users[0], users[1]
+            ]);
+        });
+        it("should be return users with offset", async () => {
+            const result = await repository.findBy({
+                offset: 2
+            });
+            expect(result).toHaveLength(2);
+            expect(result).toEqual([
+                users[2], users[3]
+            ]);
+        });
+        it("should be return users with order by login", async () => {
+            const result = await repository.findBy({
+                order: {
+                    login: "ASC"
+                }
+            });
+            expect(result).toHaveLength(4);
+            expect(result).toEqual([
+                users[3],
+                users[2],
+                users[1],
+                users[0],
+            ]);
+        });
+    });
 });
