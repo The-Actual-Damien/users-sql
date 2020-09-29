@@ -80,5 +80,21 @@ describe("SqlUserRepository", () => {
             }
         });
     });
-
+    describe("findByLogin", () => {
+        let users: User[];
+        beforeEach(async () => {
+            users = await connection.getRepository(User).save([
+                { login: "1234", password: '1234' }
+            ]);
+        });
+        it("should be return user by login", async () => {
+            const user = await repository.findByLogin('1234');
+            expect(user).toBeDefined();
+            expect(user).toEqual(users[0]);
+        });
+        it("should be return undefined", async () => {
+            const user = await repository.findByLogin('12345');
+            expect(user).toBeUndefined();
+        });
+    });
 });
